@@ -2,6 +2,7 @@ package com.example.prusp.booklistingappwithoutlibraries;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=search+";
+
     EditText editText;
     Button button;
     BookAdapter adapter;
@@ -36,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
         adapter = new BookAdapter(this, -1);
 
         listView = (ListView) findViewById(R.id.list_view);
+//        Parcelable state = listView.onSaveInstanceState();
         listView.setAdapter(adapter);
+//        listView.onRestoreInstanceState(state);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,9 +124,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private String getFullUrlForRequest() {
-            final String baseUrl = "https://www.googleapis.com/books/v1/volumes?q=search+";
             String endUrl = editText.getText().toString().trim().replaceAll("\\s+", "+");
-            return (baseUrl + endUrl);
+            return (BASE_URL + endUrl);
         }
 
         @Override
