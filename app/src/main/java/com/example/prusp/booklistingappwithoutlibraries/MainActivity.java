@@ -1,11 +1,14 @@
 package com.example.prusp.booklistingappwithoutlibraries;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -23,6 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String BASE_URL = "https://www.googleapis.com/books/v1/volumes?q=search+";
+    private static final String RESULTS = "booksResults";
 
     EditText editText;
     Button button;
@@ -39,18 +43,36 @@ public class MainActivity extends AppCompatActivity {
         adapter = new BookAdapter(this, -1);
 
         listView = (ListView) findViewById(R.id.list_view);
-//        Parcelable state = listView.onSaveInstanceState();
         listView.setAdapter(adapter);
-//        listView.onRestoreInstanceState(state);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideVirtualKeyboard();
                 BookAsyncTask task = new BookAsyncTask();
                 task.execute();
             }
         });
+if(savedInstanceState != null) {
+    Book[] values = (Book[]) savedInstanceState.getParcelableArray(RESULTS);
+    adapter.addAll(values);
+}
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Book[] values = new Book[adapter.getCount()];
+        for(int i = 0; i<values.length; i++) {
+            values[i] = adapter.getItem(i);
+        }
+        outState.putParcelableArray(RESULTS, (Parcelable[]) values);
+    }
+
+    private void hideVirtualKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus())
+                ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     private class BookAsyncTask extends AsyncTask<URL, Void, List<Book>> {
