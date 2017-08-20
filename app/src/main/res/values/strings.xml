@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BookListingAppWithoutlibraries</string>
+    <string name="no_data_to_display">No data to display.</string>
+    <string name="check_internet">Please check your internet connection</string>
 </resources>

@@ -1,10 +1,10 @@
 package com.example.prusp.booklistingappwithoutlibraries;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String RESULTS = "booksResults";
 
     EditText editText;
+    TextView noDataTextView;
     Button button;
     BookAdapter adapter;
     ListView listView;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         editText = (EditText) findViewById(R.id.edit_text_view);
+        noDataTextView = (TextView) findViewById(R.id.no_data_to_display_text_view);
         button = (Button) findViewById(R.id.search_button);
         adapter = new BookAdapter(this, -1);
 
@@ -49,14 +53,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 hideVirtualKeyboard();
-                BookAsyncTask task = new BookAsyncTask();
-                task.execute();
+                if (isInternetAvailable()) {
+                    BookAsyncTask task = new BookAsyncTask();
+                    task.execute();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.check_internet, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 if(savedInstanceState != null) {
     Book[] values = (Book[]) savedInstanceState.getParcelableArray(RESULTS);
     adapter.addAll(values);
 }
+    }
+
+    private boolean isInternetAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        return activeNetwork.isConnectedOrConnecting();
     }
 
     @Override
@@ -66,7 +80,7 @@ if(savedInstanceState != null) {
         for(int i = 0; i<values.length; i++) {
             values[i] = adapter.getItem(i);
         }
-        outState.putParcelableArray(RESULTS, (Parcelable[]) values);
+        outState.putParcelableArray(RESULTS, values);
     }
 
     private void hideVirtualKeyboard() {
@@ -159,8 +173,13 @@ if(savedInstanceState != null) {
         }
 
         private void updateUi(List<Book> books) {
-            adapter.clear();
-            adapter.addAll(books);
+            if(books.isEmpty()){
+                noDataTextView.setVisibility(View.VISIBLE);
+            } else {
+                noDataTextView.setVisibility(View.GONE);
+                adapter.clear();
+                adapter.addAll(books);
+            }
         }
     }
 }

@@ -50,7 +50,10 @@ public class ParseAuthorsAsString {
                 JSONObject bookInfo = bookObject.getJSONObject("volumeInfo");
 
                 String title = bookInfo.getString("title");
-                JSONArray authors = bookInfo.getJSONArray("authors");
+                JSONArray authors = new JSONArray();
+                if (bookInfo.has("authors")) {
+                    authors = bookInfo.getJSONArray("authors");
+                }
                 String authorsString = formatAuthorsList(authors);
 
                 Book book = new Book(authorsString, title);
