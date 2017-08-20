@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     BookAdapter adapter;
     ListView listView;
+    private int READ_TIMEOUT = 10000;
+    private int CONNECT_TIMEOUT = 15000;
+    private int PROPER_SERVER_RESPONSE = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +71,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isInternetAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) MainActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        return activeNetwork.isConnectedOrConnecting();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     @Override
@@ -105,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            return ParseAuthorsAsString.extractBooks(jsonResponse);
+            return ParsingUtil.extractBooks(jsonResponse);
         }
 
         private String makeHttpRequest(URL url) throws IOException {
@@ -121,10 +125,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
-                urlConnection.setReadTimeout(10000);
-                urlConnection.setConnectTimeout(15000);
+                urlConnection.setReadTimeout(READ_TIMEOUT);
+                urlConnection.setConnectTimeout(CONNECT_TIMEOUT);
                 urlConnection.connect();
-                if (urlConnection.getResponseCode() == 200) {
+                if (urlConnection.getResponseCode() == PROPER_SERVER_RESPONSE) {
                     inputStream = urlConnection.getInputStream();
                     jsonResponse = readFromStream(inputStream);
                 } else {

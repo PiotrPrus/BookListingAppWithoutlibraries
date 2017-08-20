@@ -11,9 +11,9 @@ import java.util.List;
  * Created by Piotr Prus on 15.08.2017.
  */
 
-public class ParseAuthorsAsString {
+public class ParsingUtil {
 
-    private ParseAuthorsAsString() {
+    private ParsingUtil() {
     }
 
     public static String formatAuthorsList(JSONArray authorsList) throws JSONException {
