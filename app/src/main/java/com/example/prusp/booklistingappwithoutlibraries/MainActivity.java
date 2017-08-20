@@ -61,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-if(savedInstanceState != null) {
-    Book[] values = (Book[]) savedInstanceState.getParcelableArray(RESULTS);
-    adapter.addAll(values);
-}
+        if (savedInstanceState != null) {
+            Book[] values = (Book[]) savedInstanceState.getParcelableArray(RESULTS);
+            adapter.addAll(values);
+        }
     }
 
     private boolean isInternetAvailable() {
@@ -77,7 +77,7 @@ if(savedInstanceState != null) {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Book[] values = new Book[adapter.getCount()];
-        for(int i = 0; i<values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             values[i] = adapter.getItem(i);
         }
         outState.putParcelableArray(RESULTS, values);
@@ -173,11 +173,11 @@ if(savedInstanceState != null) {
         }
 
         private void updateUi(List<Book> books) {
-            if(books.isEmpty()){
+            adapter.clear();
+            if (books.isEmpty()) {
                 noDataTextView.setVisibility(View.VISIBLE);
             } else {
                 noDataTextView.setVisibility(View.GONE);
-                adapter.clear();
                 adapter.addAll(books);
             }
         }
